@@ -28,16 +28,19 @@ class Cell {
 	// number of queens threatening this square
 	int w_conf, b_conf;
 
-	// Neighbours - cells which are diagonal or in the same row or column
+	// Possible Moves - cells which are diagonal or in the same row or column
+	std::unordered_set<Cell*> posb_moves;
+
+	// Neighbours - When the queen in this cell is looking for a new home (FindNext()) this group is searched
+	// Use smaller or larger neighbourhoods to affect algorithm speed and output
 	std::unordered_set<Cell*> neighbours;
 
 	public:
-		// constructors
-		Cell();
+		// constructor
 		Cell(int _r, int _c, char _display, int _n);
 
-		// creates neighbourhoods
-		void setNeighbours(std::vector< std::vector<Cell*> >& grid);
+		// creates posb_moves and neighbourhood hash tables
+		void init(std::vector< std::vector<Cell*> >& grid);
 
 		// returns the display character for this cell
 		char getDisplay();

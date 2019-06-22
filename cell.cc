@@ -16,31 +16,37 @@ char Cell::getDisplay() {
 	return display;
 }
 
-void Cell::setNeighbours(std::vector< std::vector<Cell*> >& grid) {
-	// make sure cells have been properly initialized
-	if (r == -1) {
-		std::cerr << "Cell is not initialized yet" << std::endl;
-		return;
-	}
-
-	// add neighbouring cells - ie. they're in my row, column, or diagonal to me
+// Builds the set of possible moves for a queen on this cell (posb_moves)
+// And builds the set of neighbours for a queen on this cell (neighbours)
+void Cell::init(std::vector< std::vector<Cell*> >& grid) {
+	// add posb_moves cells - ie. they're in my row, column, or diagonal to me
 	for (int i = 0 ; i < n ; ++i) {
-		// add column to neighbours
+		// add column to possible moves (posb_moves)
 		if (i != r)
-			neighbours.insert(grid[i][c]);
-		// add row to neighbours
+			posb_moves.insert(grid[i][c]);
+		// add row to possible moves (posb_moves)
 		if (i != c)
-			neighbours.insert(grid[r][i]);
-		// add diagonal neighbours distance i from myself
+			posb_moves.insert(grid[r][i]);
+		// add diagonal possible moves distance i from myself
 		if (i > 0) {
 			if (r-i >= 0 && c-i >= 0)
-				neighbours.insert(grid[r-i][c-i]);
+				posb_moves.insert(grid[r-i][c-i]);
 			if (r-i >= 0 && c+i < n)
-				neighbours.insert(grid[r-i][c+i]);
+				posb_moves.insert(grid[r-i][c+i]);
 			if (r+i < n && c-i >= 0)
-				neighbours.insert(grid[r+i][c-i]);
+				posb_moves.insert(grid[r+i][c-i]);
 			if (r+i < n && c+i < n)
-				neighbours.insert(grid[r+i][c+i]);
+				posb_moves.insert(grid[r+i][c+i]);
+		}
+	}
+
+	// add neighbours
+	for (int i = 0 ; i < n ; ++i) {
+		for (int j = 0 ; j < n ; ++j) {
+			// make sure either row is different or column is different so I don't add myself
+			if (i != r || j != c) {
+				neighbours.insert(grid[i][j]);
+			}
 		}
 	}
 }
@@ -53,12 +59,12 @@ void Cell::addQueen(char _display) {
 	occupied = true;
 
 	if (display == 'w') {
-		for (Cell* neighbour : neighbours) {
-			neighbour->w_conf += 1;
+		for (Cell* target : posb_moves) {
+			target->w_conf += 1;
 		}
 	} else if (display == 'b') {
-		for (Cell* neighbour : neighbours) {
-			neighbour->b_conf += 1;
+		for (Cell* target : posb_moves) {
+			target->b_conf += 1;
 		}
 	}
 
@@ -70,12 +76,12 @@ void Cell::removeQueen() {
 	assert(occupied);
 
 	if (display == 'w') {
-		for (Cell* neighbour : neighbours) {
-			neighbour->w_conf -= 1;
+		for (Cell* target : posb_moves) {
+			target->w_conf -= 1;
 		}
 	} else if (display == 'b') {
-		for (Cell* neighbour : neighbours) {
-			neighbour->b_conf -= 1;
+		for (Cell* target : posb_moves) {
+			target->b_conf -= 1;
 		}
 	}
 

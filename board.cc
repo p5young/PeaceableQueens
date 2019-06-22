@@ -25,10 +25,10 @@ Board::Board(int _n) {
 		}
 	}
 
-	// for each cell, add its neighbours
+	// for each cell, add its possible moves and neighbours
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
-			grid[i][j]->setNeighbours(grid);
+			grid[i][j]->init(grid);
 		}
 	}
 
@@ -146,14 +146,12 @@ void Board::run() {
 
 		if (conflicts == 0) {
 			max_solution += 1;
-			//std::cout << "Solution found - current pairs:" << max_solution << std::endl;
-			//print();
+			std::cout << "Solution found - current pairs:" << max_solution << std::endl;
+			print();
 			addPair();
 
 			// reset counter - each solution gets 10000 moves worth of trying
 			i = 0;
 		}
 	}
-	std::cout << "algorithm complete: total pairs = " << max_solution << std::endl;
-	print();
 }
