@@ -10,6 +10,7 @@ Board::Board(int _n) {
 	// initialize number of conflicts to 0 since board is empty
 	conflicts = 0;
 
+	// number of queens on the board
 	max_solution = 0;
 
 	// set grid size to n * n
@@ -38,9 +39,12 @@ Board::Board(int _n) {
 	// places the first 2 queens on the board
 	addPair();
 
+	// print initial message to user
+	std::cout << "Board of size " << n << "x" << n << " created.\n" << "Working..." << std::endl;
+
 	// display starting board
-	std::cout << "Starting Board" << std::endl;
-	print();
+	//std::cout << "Starting Board" << std::endl;
+	//print();
 
 }
 
@@ -108,7 +112,9 @@ void Board::moveQueen(Cell* oldCell, Cell* nextCell) {
 
 // print the board
 void Board::print() {
-	// print header
+
+	std::cout << "number of queens placed: " << max_solution << std::endl;
+	// print header - just a row of '-'s
 	std::cout << std::string(n, '-') << std::endl;
 
 	// print board
@@ -140,8 +146,8 @@ void Board::run() {
 
 		if (conflicts == 0) {
 			max_solution += 1;
-			std::cout << "Solution found - current pairs:" << max_solution << std::endl;
-			print();
+			//std::cout << "Solution found - current pairs:" << max_solution << std::endl;
+			//print();
 			addPair();
 
 			// reset counter - each solution gets 10000 moves worth of trying
@@ -149,4 +155,5 @@ void Board::run() {
 		}
 	}
 	std::cout << "algorithm complete: total pairs = " << max_solution << std::endl;
+	print();
 }
