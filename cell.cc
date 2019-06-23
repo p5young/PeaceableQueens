@@ -67,7 +67,32 @@ void Cell::addQueen(char _display) {
 			target->b_conf += 1;
 		}
 	}
+}
 
+// returns the number of conflicts this cell has
+// or, if a display character of 'w' or 'b' is passed as an argument, the number of conflicts this cell would have
+int Cell::cost(char _display) {
+
+	// true if we're asking for the conflicts a white queen would have on this square
+	bool whitequeen;
+	if (_display == '+') {
+		assert(occupied);
+		if (display == 'w') {
+			whitequeen = true;
+		} else if (display == 'b') {
+			whitequeen = false;
+		}
+	} else if (_display == 'w') {
+		whitequeen = true;
+	} else if (_display == 'b') {
+		whitequeen = false;
+	}
+
+	if (whitequeen) {
+		return b_conf;
+	} else {
+		return w_conf;
+	}
 }
 
 // removes the queen from this cell

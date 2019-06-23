@@ -5,6 +5,7 @@
 #include <vector>	// For grid
 #include <ctime>    // For time()
 #include <cstdlib>  // For srand() and rand()
+#include <cmath>	// For log() and exp()
 #include <unordered_set>
 #include <iterator>
 
@@ -19,7 +20,7 @@ class Board {
 	int conflicts;
 
 	// number of queens placed with no conflicts
-	int max_solution;
+	int num_queens;
 
 	// vector of cells where queens are
 	std::unordered_set<Cell*> queens;
@@ -40,6 +41,9 @@ class Board {
 	// moves a queen from oldCell to newCell
 	void moveQueen(Cell* oldCell, Cell* newCell);
 
+	// runs the simulated annealing algorithm for a given number of queens
+	void simulatedAnnealing();
+
 	public:
 		// constructor
 		Board(int _n);
@@ -50,7 +54,7 @@ class Board {
 		// displays the board
 		void print();
 
-		// runs the hillclimbing algorithm
+		// runs the simulated annealing algorithm, when a solution is found, increases the number of queens and runs again
 		void run();
 };
 

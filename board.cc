@@ -11,7 +11,7 @@ Board::Board(int _n) {
 	conflicts = 0;
 
 	// number of queens on the board
-	max_solution = 0;
+	num_queens = 0;
 
 	// set grid size to n * n
 	grid.resize(n);
@@ -62,16 +62,16 @@ Board::~Board() {
 template <typename I>
 I Board::randomElement(I begin, I end) {
 	const unsigned long n = std::distance(begin, end);
-    const unsigned long divisor = (RAND_MAX) / n;
+	const unsigned long divisor = (RAND_MAX) / n;
 
-    unsigned long k;
-    // NOTE: This loop almost always only executes once
-    do {
-    	k = std::rand() / divisor;
-    } while (k >= n);
+	unsigned long k;
+	// NOTE: This loop almost always only executes once
+	do {
+		k = std::rand() / divisor;
+	} while (k >= n);
 
-    std::advance(begin, k);
-    return begin;
+	std::advance(begin, k);
+	return begin;
 }
 
 // Adds another white and black queen pair to the board in a random location
@@ -94,6 +94,9 @@ void Board::addPair() {
 		addQueen(r, c, colour);
 		colour = 'b';
 	}
+
+	// increase counter
+	++num_queens;
 }
 
 void Board::addQueen(int r, int c, char colour) {
@@ -129,7 +132,7 @@ void Board::moveQueen(Cell* oldCell, Cell* nextCell) {
 // print the board
 void Board::print() {
 
-	std::cout << "number of queens placed: " << max_solution << std::endl;
+	std::cout << "number of queens placed: " << num_queens << std::endl;
 	// print header - just a row of '-'s
 	std::cout << std::string(n, '-') << std::endl;
 
@@ -145,29 +148,67 @@ void Board::print() {
 	std::cout << std::string(n, '-') << std::endl;
 }
 
-// 
-void Board::run() {
-	for (int i = 0 ; i < 1000000 ; ++i) {
+void Board::simulatedAnnealing() {
+	int x = 5000000;				// x is the number of times T will be decrimented (represents x axis of T  = f(x))
+	float T = 10.0;					// initialize T to starting temperature
+	float k = x / log(T + 1);		// determine constant k based on starting temperature T and domain of x
+
+	while (true) {
+
+		// Set T
+		T = exp(x / k) - 1;			// - 1 so when x = 0, T = 0
+				
+		// EXIT LOOP WHEN T <= 0 or a solution is found
+		if (conflicts == 0 || T <= 0)
+			break;
+
 		// select a random queen
 		Cell* oldCell = *randomElement(queens.begin(), queens.end());
 
-		// find a neighbour with minimum cost (break ties randomly)
-		Cell* nextCell = oldCell->findNext();
+		// find a random neighbour of selected queen
+		Cell* nextCell;
+		do {
+			nextCell = *randomElement(oldCell->neighbours.begin(), oldCell->neighbours.end());
+		} while(nextCell->occupied);
 
-		// move the queen
-		moveQueen(oldCell, nextCell);
+		// find difference in cost (lower is better)
+		int curr_conflicts = oldCell->cost();
+		int new_conflicts = nextCell->cost(oldCell->display);
+		int cost_diff = new_conflicts - curr_conflicts;
 
-		//std::cout << "Conflicts: " << conflicts << std::endl;
-		//print();
+		// move the queen if cost is better
+		// if cost is worse, move with probability determined by cost difference and temperature
+		if (cost_diff < 0) {
+			moveQueen(oldCell, nextCell);
+		} else {
+			// make a random float from 0.0 to 1.0 inclusive
+			float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+
+			if (exp(cost_diff / T) <= r) {
+				moveQueen(oldCell, nextCell);
+			}
+		}
+
+		// decriment x
+		--x;
+	}
+}
+
+// runs Simulated Annealing algorithm
+void Board::run() {
+
+	// continue adding pairs of queens until the simulatedAnnealing() routine fails to find a solution
+	while (true) {
+		simulatedAnnealing();
 
 		if (conflicts == 0) {
-			max_solution += 1;
-			std::cout << "Solution found - current pairs:" << max_solution << std::endl;
+			std::cout << "Solution found - current pairs:" << num_queens << std::endl;
 			print();
 			addPair();
-
-			// reset counter - each solution gets 1000000 moves worth of trying
-			i = 0;
+		} else {
+			// no solution found, exit
+			break;
 		}
+
 	}
 }
