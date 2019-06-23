@@ -37,5 +37,5 @@ clean :									# remove files that can be regenerated
 
 run :
 	@${MAKE} ${EXEC}	> /dev/null 	# build the program
-	@./${EXEC} 4						# run it - default board size is the minimum (4x4)
+	@./${EXEC} 11 17					# run it - default board size is the minimum (4x4)
 

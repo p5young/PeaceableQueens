@@ -58,7 +58,5 @@ class Cell {
 		// returns a random element from an unordered_set or vector
 		template <typename I>
 		static I randomElement(I begin, I end);
-
-		Cell* findNext();
 };
 #endif

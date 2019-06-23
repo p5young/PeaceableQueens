@@ -22,8 +22,11 @@ class Board {
 	// number of queens placed with no conflicts
 	int num_queens;
 
-	// vector of cells where queens are
+	// hash table of cells where queens are
 	std::unordered_set<Cell*> queens;
+
+	// hash table of empty cells (no queen)
+	std::unordered_set<Cell*> no_queens; 
 
 	// the matrix of cells forming the board
 	std::vector< std::vector<Cell*> > grid;
@@ -31,18 +34,10 @@ class Board {
 	// returns a random element from an unordered_set or vector
 	template <typename I>
 	static I randomElement(I begin, I end);
-
-	// adds a white and a black queen to the board in random locations
-	void addPair();
-
-	// adds a queen to a given cell
-	void addQueen(int r, int c, char colour);
-
+	
 	// moves a queen from oldCell to newCell
 	void moveQueen(Cell* oldCell, Cell* newCell);
 
-	// runs the simulated annealing algorithm for a given number of queens
-	void simulatedAnnealing();
 
 	public:
 		// constructor
@@ -51,11 +46,17 @@ class Board {
 		// destructor
 		~Board();
 
+		// returns the number of pairs of opposite colour queens which can attack one another
+		int getConflicts();
+
+		// adds a white and a black queen to the board in random locations
+		void addPair();
+
+		// runs the simulated annealing algorithm for a given number of queens
+		void simulatedAnnealing();
+
 		// displays the board
 		void print();
-
-		// runs the simulated annealing algorithm, when a solution is found, increases the number of queens and runs again
-		void run();
 };
 
 #endif

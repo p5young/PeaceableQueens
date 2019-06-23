@@ -16,6 +16,8 @@ char Cell::getDisplay() {
 	return display;
 }
 
+
+
 // Builds the set of possible moves for a queen on this cell (posb_moves)
 // And builds the set of neighbours for a queen on this cell (neighbours)
 void Cell::init(std::vector< std::vector<Cell*> >& grid) {
@@ -51,6 +53,8 @@ void Cell::init(std::vector< std::vector<Cell*> >& grid) {
 	}
 }
 
+
+
 void Cell::addQueen(char _display) {
 
 	assert(!occupied);
@@ -68,6 +72,8 @@ void Cell::addQueen(char _display) {
 		}
 	}
 }
+
+
 
 // returns the number of conflicts this cell has
 // or, if a display character of 'w' or 'b' is passed as an argument, the number of conflicts this cell would have
@@ -95,6 +101,8 @@ int Cell::cost(char _display) {
 	}
 }
 
+
+
 // removes the queen from this cell
 void Cell::removeQueen() {
 
@@ -114,6 +122,8 @@ void Cell::removeQueen() {
 	occupied = false;
 }
 
+
+
 // returns a random element from the unordered_set or vector
 template <typename I>
 I Cell::randomElement(I begin, I end) {
@@ -128,54 +138,4 @@ I Cell::randomElement(I begin, I end) {
 
     std::advance(begin, k);
     return begin;
-}
-
-// returns the neighbour with the lowest cost - breaks ties randomly
-Cell* Cell::findNext() {
-
-	assert(occupied);
-
-	// initialize min_cost as the cost of this cell
-	int min_cost;
-	if (display == 'w') {
-		min_cost = b_conf;
-	} else if (display == 'b') {
-		min_cost = w_conf;
-	}
-
-	// hash-table of neighbours with costs equal to or below this one
-	std::unordered_set<Cell *> options;
-
-	// search neighbourhood for next move
-	for (Cell* neighbour : neighbours) {
-
-		// skip occupied cells since we can't move there
-		if (neighbour->occupied)
-			continue;
-		
-		// determine cost of neighbour
-		int cost;
-		if (display == 'w') {
-			cost = neighbour->b_conf;
-		} else if (display == 'b') {
-			cost = neighbour->w_conf;
-		}
-
-		// add to list of options if it ties min cost
-		// start new list and add it if it beats min cost
-		if (cost < min_cost) {
-			min_cost = cost;
-			options.clear();
-			options.insert(neighbour);
-		} else if (cost == min_cost) {
-			options.insert(neighbour);
-		}
-	}
-
-	// return a random cell from options
-	if (options.size() > 0) {
-		return *randomElement(options.begin(), options.end());
-	} else {
-		return this;
-	}
 }
