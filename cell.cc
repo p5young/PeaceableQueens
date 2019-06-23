@@ -40,7 +40,7 @@ void Cell::init(std::vector< std::vector<Cell*> >& grid) {
 		}
 	}
 
-	// add neighbours
+	// add every square on the board except this one as neighbours
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
 			// make sure either row is different or column is different so I don't add myself

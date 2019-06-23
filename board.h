@@ -27,6 +27,10 @@ class Board {
 	// the matrix of cells forming the board
 	std::vector< std::vector<Cell*> > grid;
 
+	// returns a random element from an unordered_set or vector
+	template <typename I>
+	static I randomElement(I begin, I end);
+
 	// adds a white and a black queen to the board in random locations
 	void addPair();
 

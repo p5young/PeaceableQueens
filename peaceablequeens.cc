@@ -60,6 +60,7 @@ int main (int argc, char *argv[] ) {
 			usage(argv);
 		default:
 			// error: too many arguments
+			std::cerr << "Too many arguments" << std::endl;
 			usage(argv);
 	}
 

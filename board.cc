@@ -58,6 +58,22 @@ Board::~Board() {
 	}	 
 }
 
+// returns a random element from the unordered_set or vector
+template <typename I>
+I Board::randomElement(I begin, I end) {
+	const unsigned long n = std::distance(begin, end);
+    const unsigned long divisor = (RAND_MAX) / n;
+
+    unsigned long k;
+    // NOTE: This loop almost always only executes once
+    do {
+    	k = std::rand() / divisor;
+    } while (k >= n);
+
+    std::advance(begin, k);
+    return begin;
+}
+
 // Adds another white and black queen pair to the board in a random location
 void Board::addPair() {
 
@@ -133,7 +149,7 @@ void Board::print() {
 void Board::run() {
 	for (int i = 0 ; i < 1000000 ; ++i) {
 		// select a random queen
-		Cell* oldCell = *Cell::randomElement(queens.begin(), queens.end());
+		Cell* oldCell = *randomElement(queens.begin(), queens.end());
 
 		// find a neighbour with minimum cost (break ties randomly)
 		Cell* nextCell = oldCell->findNext();
@@ -150,7 +166,7 @@ void Board::run() {
 			print();
 			addPair();
 
-			// reset counter - each solution gets 10000 moves worth of trying
+			// reset counter - each solution gets 1000000 moves worth of trying
 			i = 0;
 		}
 	}
