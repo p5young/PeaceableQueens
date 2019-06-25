@@ -98,6 +98,7 @@ int main (int argc, char *argv[] ) {
 		m = max_found[n-1];
 	}
 
+	// print information to user
 	std::cout << "n: " << n << std::endl
 	<< "m: " << m << std::endl
 	<< "Note: the largest solution found for a board of size " << n << " is " << max_found[n-1] << std::endl;
@@ -110,10 +111,10 @@ int main (int argc, char *argv[] ) {
 		board.addPair();
 	}
 
-	// run simulated annealing algorithm once only
+	// run simulated annealing algorithm
 	board.simulatedAnnealing();
 
-	// print whether a solution is found or not
+	// print board whether a solution is found or not
 	board.print();
 
 	if (board.getConflicts() > 0) {
