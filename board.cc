@@ -173,7 +173,7 @@ void Board::simulatedAnnealing() {
 		// find a random neighbour of selected queen
 		Cell* nextCell = *randomElement(no_queens.begin(), no_queens.end());
 
-		// find difference in cost (lower is better)
+		// find difference in cost (higher is better)
 		int curr_conflicts = oldCell->cost();
 		int new_conflicts = nextCell->cost(oldCell->display);
 		int cost_diff = curr_conflicts - new_conflicts;
