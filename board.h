@@ -16,10 +16,10 @@ class Board {
 	// matrix width/height
 	int n;
 
-	// number of queens under attack x2 (should always be even)
+	// number of queens under attack
 	int conflicts;
 
-	// number of queens placed with no conflicts
+	// number of queens placed
 	int num_queens;
 
 	// hash table of cells where queens are
@@ -34,7 +34,7 @@ class Board {
 	// returns a random element from an unordered_set or vector
 	template <typename I>
 	static I randomElement(I begin, I end);
-	
+
 	// moves a queen from oldCell to newCell
 	void moveQueen(Cell* oldCell, Cell* newCell);
 

@@ -8,6 +8,8 @@ n: the width/height of the nxn board. n must be an integer such that 3 <= n <= 3
 m: the number of pairs of queens placed on the board. m must be an integer such that 0 <= m < ((n * n) / 2).\
 m is optional, and if it is not given, the program will default to the largest known solution for a board of size n.
 
+To compile the code, type "make" into terminal while in this directory.
+
 For more information about this problem, see this YouTube video:
 https://www.youtube.com/watch?time_continue=1&v=IN1fPtY9jYg
 

@@ -101,7 +101,8 @@ int main (int argc, char *argv[] ) {
 	// print information to user
 	std::cout << "n: " << n << std::endl
 	<< "m: " << m << std::endl
-	<< "Note: the largest solution found for a board of size " << n << " is " << max_found[n-1] << std::endl;
+	<< "Note: the largest solution found for a board of size " << n << " is " << max_found[n-1] << std::endl
+	<< "Starting..." << std::endl;
 
 	// Create the board
 	Board board(n);

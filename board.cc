@@ -153,6 +153,11 @@ void Board::simulatedAnnealing() {
 	float T = 10.0;					// initialize T to starting temperature
 	float k = x / log(T + 1);		// allows you to change T at will and logarithmic annealing schedule will be maintained over domain x
 
+	// Since the algorithm takes a while, notify the user whenever 1/10th of the algorithm is complete
+	int notify_user = x / 10;
+	const int notify_reset_val = notify_user;
+	int notifies_remaining = 10;
+
 	while (true) {
 
 		// Set T
@@ -188,6 +193,14 @@ void Board::simulatedAnnealing() {
 
 		// decriment x
 		--x;
+
+		--notify_user;
+		if (notify_user == 0) {
+			// print and decriment counter
+			std::cout << notifies_remaining-- << std::endl;
+			// reset counter
+			notify_user = notify_reset_val;
+		}
 	}
 }
 
