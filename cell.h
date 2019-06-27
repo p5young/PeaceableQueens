@@ -12,10 +12,10 @@
 class Cell {
 
 	// Coordinates - row and column
-	int r, c;
+	const int r, c;
 
 	// size of grid
-	int n;
+	const int n;
 
 	// Display character when board is printed
 	// + : empty
@@ -34,16 +34,12 @@ class Cell {
 	// Possible Moves - cells which are diagonal or in the same row or column
 	std::unordered_set<Cell*> posb_moves;
 
-	// Neighbours - When the queen in this cell is looking for a new home (FindNext()) this group is searched
-	// Use smaller or larger neighbourhoods to affect algorithm speed and output
-	std::unordered_set<Cell*> neighbours;
-
 	public:
 		// constructor
-		Cell(int _r, int _c, char _display, int _n);
+		Cell(const int _r, const int _c, const char _display, const int _n);
 
-		// creates posb_moves and neighbourhood hash tables
-		void init(std::vector< std::vector<Cell*> >& grid);
+		// creates posb_moves hash table
+		void init(const std::vector< std::vector<Cell*> >& grid);
 
 		// returns the display character for this cell
 		char getDisplay();
@@ -53,16 +49,16 @@ class Cell {
 
 		// returns the number of conflicts this cell has
 		// or, if a display character of 'w' or 'b' is passed as an argument, the number of conflicts this cell would have
-		int cost(char _display = '+');
+		int cost(const char _display = '+');
 
 		// adds a queen to this cell
 		// _display must be either 'b' or 'w'
 		// this cell must not be occupied already
-		void addQueen(char _display);
+		void addQueen(const char _display);
 
 		// removes the queen from this cell
 		// this cell must be occupied
 		void removeQueen();
-};
+}; // cell
 
 #endif

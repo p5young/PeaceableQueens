@@ -18,7 +18,7 @@
 class Board {
 
 	// matrix width/height
-	int n;
+	const int n;
 
 	// number of queens under attack
 	int conflicts;
@@ -39,10 +39,9 @@ class Board {
 	// moves a queen from oldCell to newCell
 	void moveQueen(Cell* oldCell, Cell* newCell);
 
-
 	public:
 		// constructor
-		Board(int _n);
+		Board(const int _n);
 
 		// destructor
 		~Board();
@@ -58,6 +57,6 @@ class Board {
 
 		// displays the board
 		void print();
-};
+}; // board
 
 #endif

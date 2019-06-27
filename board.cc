@@ -7,9 +7,7 @@
 
 // constructor
 // builds an empty _n * _n
-Board::Board(int _n) {
-	// initialize n (board width/height)
-	n = _n;
+Board::Board(const int _n) : n(_n) {
 
 	// initialize number of conflicts to 0 since board is empty
 	conflicts = 0;
@@ -23,8 +21,8 @@ Board::Board(int _n) {
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
 			grid[i][j] = new Cell(i, j, '+', n);
-		}
-	}
+		} // for
+	} // for
 
 	// for each cell, add its possible moves and neighbours
 	// and add to set of empty cells
@@ -32,12 +30,12 @@ Board::Board(int _n) {
 		for (int j = 0 ; j < n ; ++j) {
 			grid[i][j]->init(grid);			// add possible moves and neighbours
 			no_queens.insert(grid[i][j]);	// add to set of empty cells
-		}
-	}
+		} // for
+	} // for
 
 	// Initialize random number generator
 	srand(time(0));
-}
+} // constructor
 
 
 
@@ -47,9 +45,9 @@ Board::~Board() {
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
 			delete grid[i][j];
-		}
-	}	 
-}
+		} // for
+	} // for
+} // destructor
 
 
 
@@ -69,10 +67,12 @@ I Board::randomElement(I begin, I end) {
 
 	std::advance(begin, k);
 	return begin;
-}
+} // randomElement
 
 // moves a queen from oldCell to nextCell
 void Board::moveQueen(Cell* oldCell, Cell* nextCell) {
+
+	// check if queen is actually moving
 	if (oldCell == nextCell)
 		return;
 
@@ -96,14 +96,14 @@ void Board::moveQueen(Cell* oldCell, Cell* nextCell) {
 	// add nextCell to queens set
 	no_queens.erase(nextCell);
 	queens.insert(nextCell);
-}
+} // moveQueen
 
 
 
 // returns the number of pairs of opposite colour queens which can attack one another
 int Board::getConflicts() {
 	return conflicts;
-}
+} // getConflicts
 
 // Adds another white and black queen pair to the board in a random location
 void Board::addPair() {
@@ -146,28 +146,27 @@ void Board::addPair() {
 
 	// increase conflict counter if necessary
 	conflicts += black_queen->cost();
-}
+} // addPair
 
-
-
+// Standard simulated annealing algorithm.
+// Starting state is a random board configuration with a given number of queen pairs.
+// Neighbouring states are those board configurations which can be reached by moving
+// a pre-determined random queen to any unoccupied square on the board.
 void Board::simulatedAnnealing() {
-	int x = 5000000;				// x is the number of times T will be decrimented (represents x axis of T  = f(x))
-	float T = 10.0;					// initialize T to starting temperature
-	float k = x / log(T + 1);		// allows you to change T at will and logarithmic annealing schedule will be maintained over domain x
+	int x = 5000000;					// x is the number of times T will be decrimented (represents x axis of T = e ^ (x/k) for constant k
+	float T = 10.0;						// initialize T to starting temperature
+	const float k = x / log(T + 1);		// allows you to change T at will and annealing schedule will be maintained over domain x
 
-	// Since the algorithm takes a while, notify the user whenever 1/10th of the algorithm is complete
-	int notify_user = x / 10;
-	const int notify_reset_val = notify_user;
-	int notifies_remaining = 10;
+	// Since the algorithm takes a while for large boards, notify the user whenever 1/10th of the algorithm is complete
+	int notify_user = x / 10;					// decrimented after every move, reset whenever user is notified
+	const int notify_reset_val = notify_user;	// reset value for notify_user
+	int notifies_remaining = 10;				// the values given to the user. First 10, then 9, 8, ...
 
-	while (true) {
+	// Set T
+	T = exp(x / k) - 1;					// - 1 so when x = 0, T = 0
 
-		// Set T
-		T = exp(x / k) - 1;			// - 1 so when x = 0, T = 0
-				
-		// EXIT LOOP WHEN T <= 0 or a solution is found
-		if (conflicts == 0 || T <= 0)
-			break;
+	// exit loop if a solution is found or temperature reaches 0
+	while (conflicts > 0 && T > 0) {
 
 		// select a random queen
 		Cell* oldCell = *randomElement(queens.begin(), queens.end());
@@ -180,14 +179,15 @@ void Board::simulatedAnnealing() {
 		int new_conflicts = nextCell->cost(oldCell->getDisplay());
 		int cost_diff = curr_conflicts - new_conflicts;
 
-		// move the queen if cost is better
+		// move the queen if cost is better or the same
 		// if cost is worse, move with probability determined by cost difference and temperature
-		if (cost_diff > 0) {
+		if (cost_diff >= 0) {
 			moveQueen(oldCell, nextCell);
 		} else {
 			// make a random float from 0.0 to 1.0 inclusive
 			float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
+			// cost_diff < 0, meaning e is raised to a negative power. Hence, 0 <= exp(cost_diff/T) < 1
 			if ( r <= exp(cost_diff / T) ) {
 				moveQueen(oldCell, nextCell);
 			}
@@ -195,6 +195,9 @@ void Board::simulatedAnnealing() {
 
 		// decriment x
 		--x;
+
+		// Reduce temperature
+		T = exp(x / k) - 1;			// - 1 so when x = 0, T = 0
 
 		--notify_user;
 		if (notify_user == 0) {
@@ -213,16 +216,23 @@ void Board::print() {
 
 	std::cout << "Pairs of queens on board: " << queens.size()/2 << std::endl;
 	// print header - just a row of '-'s
-	std::cout << std::string(n, '-') << std::endl;
+	std::cout << std::string(n*2 - 1, '-') << std::endl;
 
 	// print board
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
+			// print cell display character
 			std::cout << grid[i][j]->getDisplay();
-		}
+
+			// print spaces between columns
+			if (j < n-1)
+				std::cout << " ";
+		} // for columns
+
+		// start next row
 		std::cout << std::endl;
-	}
+	} // for rows
 
 	// print footer
-	std::cout << std::string(n, '-') << std::endl;
-}
+	std::cout << std::string(n*2 - 1, '-') << std::endl;
+} // print

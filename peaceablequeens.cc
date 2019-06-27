@@ -30,10 +30,10 @@ bool is_number(const std::string& s) {
     for ( unsigned int i = 0 ; i < s.length() ; ++i ) {
     	if (!isdigit(s[i])) {
     		return false;
-    	}
-    }
+    	} // if
+    } // for
     return true;
-}
+} // is_number
 
 // Processes command line argument, initializes the board, and calls run() on the board.
 int main (int argc, char *argv[] ) {
