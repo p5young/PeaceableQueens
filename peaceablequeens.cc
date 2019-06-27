@@ -11,10 +11,6 @@ if m is specified, the program will try to find an arrangement where no queens o
 if m is not specified, the program will default to the currently known maximum and place that many pairs.
 */
 
-
-#include <iostream>
-#include <cstdlib>
-
 #include "board.h"
 
 // Displays the proper usage of the program and exits
