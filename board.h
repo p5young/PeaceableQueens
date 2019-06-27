@@ -1,13 +1,17 @@
+// File: board.h
+// Author: Philip Young
+// Date: 26 June 2019
+
 #ifndef BOARD
 #define BOARD
 
-#include <iostream>
-#include <vector>	// For grid
-#include <ctime>    // For time()
-#include <cstdlib>  // For srand() and rand()
-#include <cmath>	// For log() and exp()
-#include <unordered_set>
-#include <iterator>
+#include <iostream>			// For std::cout
+#include <vector>			// For grid
+#include <ctime>    		// For time()
+#include <cstdlib>  		// For srand() and rand()
+#include <cmath>			// For log() and exp()
+#include <unordered_set>	// For queens and no_queens hash tables
+#include <iterator>			// For randomElement()
 
 #include "cell.h"
 
@@ -18,9 +22,6 @@ class Board {
 
 	// number of queens under attack
 	int conflicts;
-
-	// number of queens placed
-	int num_queens;
 
 	// hash table of cells where queens are
 	std::unordered_set<Cell*> queens;
@@ -52,7 +53,7 @@ class Board {
 		// adds a white and a black queen to the board in random locations
 		void addPair();
 
-		// runs the simulated annealing algorithm for a given number of queens
+		// runs the simulated annealing algorithm
 		void simulatedAnnealing();
 
 		// displays the board

@@ -1,14 +1,15 @@
+// File: cell.h
+// Author: Philip Young
+// Date: 26 June 2019
+
 #ifndef CELL
 #define CELL
 
-#include <unordered_set>
-#include <vector>
-#include <iostream>
-#include <assert.h>
+#include <unordered_set>	// for posb_moves and neighbours
+#include <vector>			// for init() which takes in a reference to a vector
+#include <assert.h>			// for assert()
 
 class Cell {
-
-	friend class Board;
 
 	// Coordinates - row and column
 	int r, c;
@@ -47,16 +48,21 @@ class Cell {
 		// returns the display character for this cell
 		char getDisplay();
 
+		// returns true if this cell is occupied by a queen
+		bool Occupied();
+
 		// returns the number of conflicts this cell has
 		// or, if a display character of 'w' or 'b' is passed as an argument, the number of conflicts this cell would have
 		int cost(char _display = '+');
 
+		// adds a queen to this cell
+		// _display must be either 'b' or 'w'
+		// this cell must not be occupied already
 		void addQueen(char _display);
 
+		// removes the queen from this cell
+		// this cell must be occupied
 		void removeQueen();
-
-		// returns a random element from an unordered_set or vector
-		template <typename I>
-		static I randomElement(I begin, I end);
 };
+
 #endif

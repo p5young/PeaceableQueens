@@ -1,6 +1,6 @@
 // File: peaceablequeens.cc
 // Author: Philip Young
-// Date: 13 June 2019
+// Date: 26 June 2019
 
 /* Desc:
 ./peaceablequeens n [m]
@@ -101,7 +101,7 @@ int main (int argc, char *argv[] ) {
 	// print information to user
 	std::cout << "n: " << n << std::endl
 	<< "m: " << m << std::endl
-	<< "Note: the largest solution found for a board of size " << n << " is " << max_found[n-1] << std::endl
+	<< "Note: the largest known solution found for a board of size " << n << " is " << max_found[n-1] << std::endl
 	<< "Starting..." << std::endl;
 
 	// Create the board
@@ -119,7 +119,7 @@ int main (int argc, char *argv[] ) {
 	board.print();
 
 	if (board.getConflicts() > 0) {
-		std::cout << "Sorry, I could not find a solution" << std::endl;
+		std::cout << "Sorry, I couldn't find a solution" << std::endl;
 	} else {
 		std::cout << "Solution found" << std::endl;
 	}

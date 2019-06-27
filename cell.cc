@@ -1,3 +1,7 @@
+// File: cell.cc
+// Author: Philip Young
+// Date: 26 June 2019
+
 #include "cell.h"
 
 // Constructor
@@ -14,6 +18,11 @@ Cell::Cell(int _r, int _c, char _display, int _n) {
 // returns the display character for this cell
 char Cell::getDisplay() {
 	return display;
+}
+
+// returns true if this cell is occupied by a queen
+bool Cell::Occupied() {
+	return occupied;
 }
 
 
@@ -54,10 +63,12 @@ void Cell::init(std::vector< std::vector<Cell*> >& grid) {
 }
 
 
-
+// Adds a queen to this cell
+// _display = 'b' for black queen, or 'w' for white queen
 void Cell::addQueen(char _display) {
 
 	assert(!occupied);
+	assert(_display == 'w' || _display == 'b');
 	
 	display = _display;
 	occupied = true;
@@ -75,14 +86,25 @@ void Cell::addQueen(char _display) {
 
 
 
-// returns the number of conflicts this cell has
-// or, if a display character of 'w' or 'b' is passed as an argument, the number of conflicts this cell would have
+// cost() returns the number of conflicts this cell has if it is occupied
+// or, if a display character of 'w' or 'b' is passed as an argument, the number
+// of conflicts this cell would have if it were occupied.
+// cost() can only be called on occupied Cell's
+// cost('w') or cost('b') can only be called on unoccupied cells
 int Cell::cost(char _display) {
+
+	if (_display == '+') {
+		assert(occupied);
+	} else {
+		assert(_display == 'w' || _display == 'b');
+		assert(!occupied);
+	}
 
 	// true if we're asking for the conflicts a white queen would have on this square
 	bool whitequeen;
-	if (_display == '+') {
-		assert(occupied);
+
+	// initialize whitequeen boolean
+	if (_display == '+') {			// this cell is occupied
 		if (display == 'w') {
 			whitequeen = true;
 		} else if (display == 'b') {
@@ -94,6 +116,7 @@ int Cell::cost(char _display) {
 		whitequeen = false;
 	}
 
+	// return cost value (number of opposing colour queens targeting this square)
 	if (whitequeen) {
 		return b_conf;
 	} else {
@@ -108,6 +131,7 @@ void Cell::removeQueen() {
 
 	assert(occupied);
 
+	// reduce conflict counters for every cell I can target
 	if (display == 'w') {
 		for (Cell* target : posb_moves) {
 			target->w_conf -= 1;
@@ -118,24 +142,9 @@ void Cell::removeQueen() {
 		}
 	}
 
+	// reset display character
 	display = '+';
+
+	// flag as unoccupied
 	occupied = false;
-}
-
-
-
-// returns a random element from the unordered_set or vector
-template <typename I>
-I Cell::randomElement(I begin, I end) {
-	const unsigned long n = std::distance(begin, end);
-    const unsigned long divisor = (RAND_MAX) / n;
-
-    unsigned long k;
-    // NOTE: This loop almost always only executes once
-    do {
-    	k = std::rand() / divisor;
-    } while (k >= n);
-
-    std::advance(begin, k);
-    return begin;
 }

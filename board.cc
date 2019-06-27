@@ -1,8 +1,12 @@
+// File: board.cc
+// Author: Philip Young
+// Date: 26 June 2019
+
 #include "board.h"
 
 
 // constructor
-// builds _n * _n board and randomly places a white queen and a black queen
+// builds an empty _n * _n
 Board::Board(int _n) {
 	// initialize n (board width/height)
 	n = _n;
@@ -10,10 +14,7 @@ Board::Board(int _n) {
 	// initialize number of conflicts to 0 since board is empty
 	conflicts = 0;
 
-	// number of queens on the board
-	num_queens = 0;
-
-	// set grid size to n * n
+	// resize grid to n * n
 	grid.resize(n);
 	for (int i = 0 ; i < n ; ++i)
 		grid[i].resize(n);
@@ -26,9 +27,10 @@ Board::Board(int _n) {
 	}
 
 	// for each cell, add its possible moves and neighbours
+	// and add to set of empty cells
 	for (int i = 0 ; i < n ; ++i) {
 		for (int j = 0 ; j < n ; ++j) {
-			grid[i][j]->init(grid);
+			grid[i][j]->init(grid);			// add possible moves and neighbours
 			no_queens.insert(grid[i][j]);	// add to set of empty cells
 		}
 	}
@@ -51,45 +53,47 @@ Board::~Board() {
 
 
 
-// returns a random element from the unordered_set or vector
+// returns an iterator pointing to a random element from the unordered_set or vector
+// designed to pick random elements more uniformly than std::rand() % n
 template <typename I>
 I Board::randomElement(I begin, I end) {
 	const unsigned long n = std::distance(begin, end);
 	const unsigned long divisor = (RAND_MAX) / n;
 
-	unsigned long k;
-	// NOTE: This loop almost always only executes once
-	do {
-		k = std::rand() / divisor;
-	} while (k >= n);
+	unsigned long k = std::rand() / divisor;
+
+	// NOTE: This code almost never executes
+	if (k >= n) {
+		k = n-1;
+	}
 
 	std::advance(begin, k);
 	return begin;
 }
 
-
-
+// moves a queen from oldCell to nextCell
 void Board::moveQueen(Cell* oldCell, Cell* nextCell) {
 	if (oldCell == nextCell)
 		return;
 
-	char display = oldCell->display;
-	if (display == 'w') {
-		conflicts -= oldCell->b_conf;
-		conflicts += nextCell->b_conf;
-	} else {
-		conflicts -= oldCell->w_conf;
-		conflicts += nextCell->w_conf;
-	}
+	assert(oldCell->Occupied());
+	assert(!nextCell->Occupied());
 
+	char display = oldCell->getDisplay();
+
+	// adjust board conflicts
+	conflicts -= oldCell->cost();
+	conflicts += nextCell->cost(display);
+
+	// move the queen
 	oldCell->removeQueen();
 	nextCell->addQueen(display);
 
-	// move oldCell to no_queens
+	// move oldCell to no_queens set
 	queens.erase(oldCell);
 	no_queens.insert(oldCell);
 
-	// add nextCell to queens
+	// add nextCell to queens set
 	no_queens.erase(nextCell);
 	queens.insert(nextCell);
 }
@@ -104,6 +108,7 @@ int Board::getConflicts() {
 // Adds another white and black queen pair to the board in a random location
 void Board::addPair() {
 
+	// ensure there's room on the board for 2 more queens
 	assert(no_queens.size() >= 2);
 
 	// ADD WHITE QUEEN //
@@ -112,7 +117,7 @@ void Board::addPair() {
 	Cell* white_queen = *randomElement(no_queens.begin(), no_queens.end());
 
 	// double check the cell is empty
-	assert(!white_queen->occupied);
+	assert(!white_queen->Occupied());
 
 	// move cell pointer from no_queens to queens
 	no_queens.erase(white_queen);
@@ -122,7 +127,7 @@ void Board::addPair() {
 	white_queen->addQueen('w');
 
 	// increase conflict counter if necessary
-	conflicts += white_queen->b_conf;
+	conflicts += white_queen->cost();
 
 	// ADD BLACK QUEEN //
 
@@ -130,7 +135,7 @@ void Board::addPair() {
 	Cell* black_queen = *randomElement(no_queens.begin(), no_queens.end());
 
 	// double check the cell is empty
-	assert(!black_queen->occupied);
+	assert(!black_queen->Occupied());
 
 	// move cell pointer from no_queens to queens
 	no_queens.erase(black_queen);
@@ -140,10 +145,7 @@ void Board::addPair() {
 	black_queen->addQueen('b');
 
 	// increase conflict counter if necessary
-	conflicts += black_queen->w_conf;
-
-	// increase counter
-	++num_queens;
+	conflicts += black_queen->cost();
 }
 
 
@@ -175,7 +177,7 @@ void Board::simulatedAnnealing() {
 
 		// find difference in cost (higher is better)
 		int curr_conflicts = oldCell->cost();
-		int new_conflicts = nextCell->cost(oldCell->display);
+		int new_conflicts = nextCell->cost(oldCell->getDisplay());
 		int cost_diff = curr_conflicts - new_conflicts;
 
 		// move the queen if cost is better
@@ -209,7 +211,7 @@ void Board::simulatedAnnealing() {
 // print the board
 void Board::print() {
 
-	std::cout << "Pairs of queens on board: " << num_queens << std::endl;
+	std::cout << "Pairs of queens on board: " << queens.size()/2 << std::endl;
 	// print header - just a row of '-'s
 	std::cout << std::string(n, '-') << std::endl;
 
