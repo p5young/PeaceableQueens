@@ -35,7 +35,7 @@ bool is_number(const std::string& s) {
     return true;
 } // is_number
 
-// Processes command line argument, initializes the board, and calls run() on the board.
+// Processes command line argument, initializes the board, and calls simulatedAnnealing() on the board.
 int main (int argc, char *argv[] ) {
 
 	// grid width/height
